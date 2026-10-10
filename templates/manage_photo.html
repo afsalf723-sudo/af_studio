@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Photos | AF Studio</title>
+
+    <style>
+        body {
+            background: #080808;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 25px;
+        }
+
+        h1, h2 {
+            color: #d2b47c;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .upload-box, .photo-card {
+            background: #151515;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin: 20px 0;
+            max-width: 100%;
+        }
+
+        button {
+            background: #d2b47c;
+            color: black;
+            border: none;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .delete-button {
+            background: #b52d2d;
+            color: white;
+            margin-top: 12px;
+        }
+
+        a {
+            color: #d2b47c;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>AF Studio — Manage My Work</h1>
+
+    <div class="upload-box">
+        <h2>Upload New Photo</h2>
+
+        <form action="/admin/photos" method="POST"
+              enctype="multipart/form-data">
+
+            <input
+                type="file"
+                name="photo"
+                accept=".jpg,.jpeg,.png,.webp"
+                required
+            >
+
+            <button type="submit">UPLOAD PHOTO</button>
+        </form>
+    </div>
+
+    <h2>Current Gallery</h2>
+
+    <div class="gallery">
+        {% for photo in photos %}
+            <div class="photo-card">
+
+                <img
+                    src="{{ url_for('static', filename='uploads/' + photo) }}"
+                    alt="AF Studio photography"
+                >
+
+                <p>{{ photo }}</p>
+
+                <form
+                    action="{{ url_for('delete_photo', filename=photo) }}"
+                    method="POST"
+                    onsubmit="return confirm('Delete this photo?');"
+                >
+                    <button class="delete-button" type="submit">
+                        DELETE PHOTO
+                    </button>
+                </form>
+
+            </div>
+        {% else %}
+            <p>No photos uploaded yet.</p>
+        {% endfor %}
+    </div>
+
+    <p><a href="/">← Back to Homepage</a></p>
+
+</div>
+</body>
+</html>
