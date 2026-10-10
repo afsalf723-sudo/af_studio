@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | AF Studio</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #080808;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: #d2b47c;
+            text-align: center;
+        }
+
+        .links {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        a, button {
+            background: #d2b47c;
+            color: #080808;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            min-width: 750px;
+        }
+
+        th, td {
+            border: 1px solid #444;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #d2b47c;
+            color: #080808;
+        }
+
+        tr:nth-child(even) {
+            background: #1a1a1a;
+        }
+
+        .status {
+            color: #d2b47c;
+            font-weight: bold;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .decline {
+            background: #b83232;
+            color: white;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>AF Studio Admin Dashboard</h1>
+
+    <div class="links">
+        <a href="/">View Website</a>
+        <a href="/admin/photos">Manage Photos</a>
+    </div>
+
+    <h2>Customer Booking Details</h2>
+
+    {% if bookings %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Service</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Details</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ booking.get('Name', '') }}</td>
+                    <td>{{ booking.get('Phone', '') }}</td>
+                    <td>{{ booking.get('Service', '') }}</td>
+                    <td>{{ booking.get('Date', '') }}</td>
+                    <td>{{ booking.get('Time', '') }}</td>
+                    <td>{{ booking.get('Details', '') }}</td>
+                    <td class="status">
+                        {{ booking.get('Status') or 'Pending' }}
+                    </td>
+
+                    <td>
+                        {% if (booking.get('Status') or 'Pending')|lower == 'pending' %}
+                        <div class="actions">
+                            <form action="{{ url_for(
+                                'update_booking',
+                                booking_id=loop.index0,
+                                action='accept'
+                            ) }}" method="POST">
+                                <button type="submit">Accept</button>
+                            </form>
+
+                            <form action="{{ url_for(
+                                'update_booking',
+                                booking_id=loop.index0,
+                                action='decline'
+                            ) }}" method="POST">
+                                <button type="submit" class="decline">
+                                    Decline
+                                </button>
+                            </form>
+                        </div>
+                        {% else %}
+                            No action
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+        <div class="empty">
+            <h3>No bookings found</h3>
+            <p>Customer booking requests will appear here after submission.</p>
+        </div>
+    {% endif %}
+
+</body>
+</html>
